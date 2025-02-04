@@ -1,6 +1,4 @@
 const gameGrid = document.getElementById("gameGrid");
-const moveCounter = document.getElementById("moveCounter");
-const timer = document.getElementById("timer");
 const restartBtn = document.getElementById("restartBtn");
 const startGameBtn = document.getElementById("startGameBtn");
 const gridRowsInput = document.getElementById("gridRows");
@@ -10,11 +8,30 @@ const gameContainer = document.querySelector(".game-container");
 
 let cards = [];
 let flippedCards = [];
-let moves = 0;
-let timerInterval = null;
-let timeElapsed = 0;
 let gridRows = 4;
 let gridCols = 4;
+
+// make variables to track scores and turns
+let currentPlayer = 1;
+let playerScores = [0, 0];
+
+// UI elements for multiplayer
+const playerTurnDisplay = document.createElement("h2");
+const player1ScoreDisplay = document.createElement("span");
+const player2ScoreDisplay = document.createElement("span");
+
+playerTurnDisplay.id = "playerTurn";
+player1ScoreDisplay.id = "player1Score";
+player2ScoreDisplay.id = "player2Score";
+
+// Insert the player info UI before the game grid
+const gameInfoContainer = document.createElement("div");
+gameInfoContainer.className = "game-info";
+gameInfoContainer.appendChild(player1ScoreDisplay);
+gameInfoContainer.appendChild(playerTurnDisplay);
+gameInfoContainer.appendChild(player2ScoreDisplay);
+
+gameContainer.insertBefore(gameInfoContainer, gameGrid);
 
 // List of animal image filenames
 const animalImages = [
@@ -54,7 +71,6 @@ function initializeGame() {
   cards = shuffleArray(cardPairs);
   createGrid();
   resetGameInfo();
-  startTimer(); // ✅ Fix: Ensure the timer starts when the game begins
 }
 
 function shuffleArray(array) {
@@ -99,8 +115,6 @@ function handleCardClick(e) {
   clickedCard.classList.add("flipped");
 
   if (flippedCards.length === 2) {
-    moves++;
-    moveCounter.textContent = moves;
     checkForMatch();
   }
 }
@@ -108,49 +122,55 @@ function handleCardClick(e) {
 function checkForMatch() {
   const [card1, card2] = flippedCards;
 
-  // Compare image filenames instead of unique symbols
   if (card1.dataset.symbol === card2.dataset.symbol) {
     card1.classList.add("matched");
     card2.classList.add("matched");
+    playerScores[currentPlayer - 1]++;
+    //update display
+    updateScores();
+
     flippedCards = [];
-    
-    // Check if all cards are matched
+
+    // Check if game is completed
     if (document.querySelectorAll(".card.matched").length === cards.length) {
-      clearInterval(timerInterval);
-      alert(`Game completed in ${moves} moves and ${formatTime(timeElapsed)}!`);
+      setTimeout(() => {
+        alert(`Game Over! Player 1: ${playerScores[0]} matches, Player 2: ${playerScores[1]} matches.`);
+      }, 500);
     }
   } else {
     setTimeout(() => {
       card1.classList.remove("flipped");
       card2.classList.remove("flipped");
       flippedCards = [];
+      switchTurn();
     }, 1000);
   }
 }
 
-function startTimer() {
-  timeElapsed = 0;
-  clearInterval(timerInterval); // ✅ Fix: Ensure previous timer is cleared
-  timerInterval = setInterval(() => {
-    timeElapsed++;
-    timer.textContent = formatTime(timeElapsed);
-  }, 1000);
+function switchTurn() {
+  currentPlayer = currentPlayer === 1 ? 2 : 1;
+  updateTurnDisplay();
 }
 
-function formatTime(seconds) {
-  return new Date(seconds * 1000).toISOString().substr(14, 5);
+function updateScores() {
+  player1ScoreDisplay.textContent = `Player 1 Matches: ${playerScores[0]}`;
+  player2ScoreDisplay.textContent = `Player 2 Matches: ${playerScores[1]}`;
+}
+
+function updateTurnDisplay() {
+  playerTurnDisplay.textContent = `Player ${currentPlayer}'s Turn`;
 }
 
 function resetGameInfo() {
-  moves = 0;
-  moveCounter.textContent = moves;
-  clearInterval(timerInterval); // ✅ Fix: Clear timer on game reset
-  timer.textContent = "00:00";
+  currentPlayer = 1;
+  playerScores = [0, 0];
+
+  updateScores();
+  updateTurnDisplay();
 }
 
 restartBtn.addEventListener("click", () => {
   gameContainer.classList.add("hidden");
   welcomeContainer.classList.remove("hidden");
-  clearInterval(timerInterval); // ✅ Fix: Clear the timer on restart
   resetGameInfo();
 });
