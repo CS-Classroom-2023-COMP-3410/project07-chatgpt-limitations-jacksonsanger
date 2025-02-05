@@ -191,25 +191,30 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function generateFruitBorder() {
-      fruitBorderContainer.innerHTML = "";
-      screenWidth = window.innerWidth;
-      screenHeight = window.innerHeight;
+    fruitBorderContainer.innerHTML = "";
 
-      const borderPadding = fruitSize * 1.5; // Ensure space around game area
+    // Get full page dimensions (including scrollable area)
+    const pageWidth = document.documentElement.scrollWidth;
+    const pageHeight = document.documentElement.scrollHeight;
 
-      for (let x = borderPadding; x < screenWidth - borderPadding; x += fruitSize) {
-          createFruit(x, borderPadding - fruitSize); // Top row
-          createFruit(x, screenHeight - borderPadding); // Bottom row
-      }
+    const borderPadding = fruitSize * 1.5; // Space around game area
 
-      for (let y = borderPadding; y < screenHeight - borderPadding; y += fruitSize) {
-          createFruit(borderPadding - fruitSize, y); // Left column
-          createFruit(screenWidth - borderPadding, y); // Right column
-      }
+    // Create top and bottom rows of fruit
+    for (let x = borderPadding; x < pageWidth - borderPadding; x += fruitSize) {
+        createFruit(x, borderPadding - fruitSize); // Top row
+        createFruit(x, pageHeight - borderPadding); // Bottom row
+    }
+
+    // Create left and right columns of fruit
+    for (let y = borderPadding; y < pageHeight - borderPadding; y += fruitSize) {
+        createFruit(borderPadding - fruitSize, y); // Left column
+        createFruit(pageWidth - borderPadding, y); // Right column
+    }
   }
-
-  generateFruitBorder();
+  generateFruitBorder(); // Initial border generation
+  // Recalculate when the page resizes or content changes
   window.addEventListener("resize", generateFruitBorder);
+  window.addEventListener("scroll", generateFruitBorder);
 
   const gameContainer = document.querySelector(".game-container");
   const gameGrid = document.querySelector(".grid");

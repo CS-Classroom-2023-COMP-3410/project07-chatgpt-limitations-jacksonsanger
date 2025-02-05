@@ -67,6 +67,18 @@
   75% { transform: rotate(-15deg); }
 }
 
+/* Ensures full height */
+html, body {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+
 /* 🍉 Fruit Border Container */
 .fruit-border {
     position: fixed;
@@ -165,20 +177,6 @@ body {
   font-family: Arial, sans-serif;
   text-align: center;
   background-color: #f5f5dc; /* Beige background */
-  margin: 0;
-  padding: 20px;
-}
-
-.game-container {
-  height: 60vh; /* 60% of viewport height */
-  overflow: hidden; /* Prevents content from breaking outside */
-  margin: auto;
-  padding: 20px;
-  background: #fff;
-  border: 2px solid #333;
-  border-radius: 10px;
-  grid-row: 2 /span 3;
-  grid-column: 2/span 3;
 }
 
 h1 {
@@ -243,6 +241,16 @@ h1 {
 
 .wrapper {
   display: grid;
-  grid-template-columns: 20% 20% 20% 20% 20%;
-  grid-template-rows: 20% 20% 20% 20% 20%;
+  grid-template-columns:  repeat(5, 1fr);
+  grid-template-rows: repeat(5, 1fr);
+  height: 90vh;
+}
+
+.game-container {
+  margin: 30px;
+  padding: 20px;
+  background: #fff;
+  border: 2px solid #333;
+  border-radius: 10px;
+  grid-column: 2/span 3;
 }
